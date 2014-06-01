@@ -6,9 +6,10 @@
  * Contents: Creation, initialisation and usage of MSAC object
  *           for vanishing point estimation in images or videos
  *
- * Author:   Marcos Nieto <marcos.nieto.doncel@gmail.com>
+ * Author:   Marcos Nieto
+ *			 marcos dot nieto dot doncel at gmail dot com
  *
- * Homepage: www.marcosnieto.net/vanishingPoint
+ * Homepage: http://marcosnietoblog.wordpress.com
  */
 
 
