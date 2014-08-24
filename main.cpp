@@ -147,7 +147,7 @@ void processImage(MSAC &msac, int numVps, cv::Mat &imgGRAY, cv::Mat &outputImg)
 	
 	// Call msac function for multiple vanishing point estimation
 	msac.multipleVPEstimation(lineSegments, lineSegmentsClusters, numInliers, vps, numVps); 
-	for(int v=0; v<vps.size(); v++)
+	for(size_t v=0; v<vps.size(); v++)
 	{
 		printf("VP %d (%.3f, %.3f, %.3f)", v, vps[v].at<float>(0,0), vps[v].at<float>(1,0), vps[v].at<float>(2,0));
 		fflush(stdout);
@@ -176,7 +176,11 @@ int main(int argc, char** argv)
 	char *imageFileName = 0;
 	cv::VideoCapture video;
 	bool useCamera = true;
+#ifdef USE_LMFIT
 	int mode = MODE_NIETO;
+#else
+	int mode = MODE_LS;
+#endif
 	int numVps = 1;
 	bool playMode = true;
 	bool stillImage = false;
@@ -298,7 +302,7 @@ int main(int argc, char** argv)
 	if(procWidth != -1)
 	{
 	
-		procHeight = height*((double)procWidth/width);
+		procHeight = static_cast<int>(height*((double)procWidth/width));
 		procSize = cv::Size(procWidth, procHeight);
 
 		printf("Resize to: (%d x %d)\n", procWidth, procHeight);	

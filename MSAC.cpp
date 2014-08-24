@@ -19,9 +19,11 @@
 
 #include "MSAC.h"
 #include "errorNIETO.h"
+#ifdef USE_LMFIT
 #include "lmmin.h"
+#endif
 
-//#ifdef DEBUG_MAP	// if defined, a 2D map will be created (which slows down the process)
+//#define DEBUG_MAP	// if defined, a 2D map will be created (which slows down the process)
 
 using namespace std;
 using namespace cv;
@@ -188,11 +190,13 @@ void MSAC::multipleVPEstimation(std::vector<std::vector<cv::Point> > &lineSegmen
 		// MSAC
 		if(__verbose)
 		{
+
 			if(__mode == MODE_LS)
 				printf("Method: Calibrated Least Squares\n");			
+#ifdef USE_LMFIT
 			if(__mode == MODE_NIETO)
 				printf("Method: Nieto\n");
-
+#endif
 			printf("Start MSAC\n");
 		}
 
@@ -309,8 +313,10 @@ void MSAC::multipleVPEstimation(std::vector<std::vector<cv::Point> > &lineSegmen
 
 			if(__mode == MODE_LS)
 				estimateLS(__Li, __Lengths, ind_CS, __N_I_best, __vp);			
+#ifdef USE_LMFIT
 			else if(__mode == MODE_NIETO)
 				estimateNIETO(__Li, __Lengths, __Mi, ind_CS, __N_I_best, __vp);	// Output __vp is calibrated
+#endif
 			else
 				perror("ERROR: mode not supported, please use {LS, LIEB, NIETO}\n");
 			
@@ -398,10 +404,12 @@ void MSAC::GetMinimalSampleSet(cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, std::
 	// Estimate the vanishing point and the residual error
 	if(__mode == MODE_LS)
 		estimateLS(Li,Lengths, MSS, 2, vp);		
+#ifdef USE_LMFIT
 	else if(__mode == MODE_NIETO)
 		estimateNIETO(Li, Mi, Lengths, MSS, 2, vp);
+#endif
 	else
-		perror("ERROR: mode not supported. Please use {LS, LIEB, NIETO}\n");
+		perror("ERROR: mode not supported. Please use {LS, NIETO}\n");
 }
 
 float MSAC::GetConsensusSet(int vpNum, cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, cv::Mat &vp, std::vector<float> &E, int *CS_counter)
@@ -415,10 +423,12 @@ float MSAC::GetConsensusSet(int vpNum, cv::Mat &Li, cv::Mat &Lengths, cv::Mat &M
 
 	if(__mode == MODE_LS)
 		J = errorLS(vpNum, Li, vp, E, CS_counter);	
+#ifdef USE_LMFIT
 	else if(__mode == MODE_NIETO)
 		J = errorNIETO(vpNum, Li, Lengths, Mi, vp, E, CS_counter);
+#endif
 	else
-		perror("ERROR: mode not supported, please use {LS, LIEB, NIETO}\n");
+		perror("ERROR: mode not supported, please use {LS, NIETO}\n");
 
 	return J;
 }
@@ -496,6 +506,7 @@ void MSAC::estimateLS(cv::Mat &Li, cv::Mat &Lengths, std::vector<int> &set, int 
 	
 	return;
 }
+#ifdef USE_LMFIT
 void MSAC::estimateNIETO(cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, std::vector<int> &set, int set_length, cv::Mat &vp)
 {
 	if (set_length == __minimal_sample_set_dimension)
@@ -674,6 +685,7 @@ void MSAC::estimateNIETO(cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, std::vector
 	vp.at<float>(2,0) = (float)z;
 
 }
+#endif
 // Error functions
 float MSAC::errorLS(int vpNum, cv::Mat &Li, cv::Mat &vp, std::vector<float> &E, int *CS_counter)
 {
@@ -717,8 +729,10 @@ float MSAC::errorLS(int vpNum, cv::Mat &Li, cv::Mat &vp, std::vector<float> &E, 
 	
 	return J;
 }
+#ifdef USE_LMFIT
 float MSAC::errorNIETO(int vpNum, cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, cv::Mat &vp, std::vector<float> &E, int *CS_counter)
 {
+
 	float J = 0;
 	float di = 0;
 	
@@ -777,7 +791,10 @@ float MSAC::errorNIETO(int vpNum, cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, cv
 	J /= (*CS_counter);	
 
 	return J;
+
+
 }
+#endif
 void MSAC::drawCS(cv::Mat &im, std::vector<std::vector<std::vector<cv::Point> > > &lineSegmentsClusters, std::vector<cv::Mat> &vps)
 {
 	vector<cv::Scalar> colors;

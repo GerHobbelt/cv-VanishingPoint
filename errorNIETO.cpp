@@ -75,9 +75,9 @@ void evaluateNieto( const double *param, int m_dat, const void *data,
 
 	// 2) Uncalibrate it using the K matrix in the data	
 	cv::Mat vn = Mat(3,1,CV_32F);
-	vn.at<float>(0,0) = x;
-	vn.at<float>(1,0) = y;
-	vn.at<float>(2,0) = z;
+	vn.at<float>(0,0) = static_cast<float>(x);
+	vn.at<float>(1,0) = static_cast<float>(y);
+	vn.at<float>(2,0) = static_cast<float>(z);
 	
 	cv::Mat vanishingPoint = mydata->K*vn;
 	if(vanishingPoint.at<float>(2,0) != 0)
