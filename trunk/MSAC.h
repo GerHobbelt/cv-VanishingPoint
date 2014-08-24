@@ -105,15 +105,19 @@ private:
 	/** This function estimates the vanishing point for a given set of line segments using the Least-squares procedure*/
 	void estimateLS(cv::Mat &Li, cv::Mat &Lengths, std::vector<int> &set, int set_length, cv::Mat &vEst);
 
+#ifdef USE_LMFIT
 	/** This function estimates the vanishing point for a given set of line segments using the Nieto's method*/
 	void estimateNIETO(cv::Mat &Li, cv::Mat &Lengths, cv::Mat &Mi, std::vector<int> &set, int set_length, cv::Mat &vEst);
+#endif
 	
 	// Error functions
 	/** This function computes the residuals of the line segments given a vanishing point using the Least-squares method*/
 	float errorLS(int vpNum, cv::Mat &Li, cv::Mat &vp, std::vector<float> &E, int *CS_counter);
 
+#ifdef USE_LMFIT
 	/** This function computes the residuals of the line segments given a vanishing point using the Nieto's method*/
 	float errorNIETO(int vpNum, cv::Mat &Li, cv::Mat &lengthsLS, cv::Mat &Mi, cv::Mat &vp, std::vector<float> &E, int *CS_counter);
+#endif
 	
 };
 
